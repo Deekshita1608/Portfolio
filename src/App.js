@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Loading from './components/Loading';
 import emailjs from '@emailjs/browser';
 import { Card } from './components/card';
 import { ExperienceCard } from './components/ExperienceCard';
@@ -11,8 +12,31 @@ import './index.css';
 const sections = ['Home', 'About', 'Experience', 'Projects', 'Education', 'Contact'];
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadedImages, setLoadedImages] = useState(0);
+  const totalImages = 1; // Update this with the actual number of images in your app
   const [theme, setTheme] = useState('light');
   const form = useRef();
+
+  const handleImageLoad = () => {
+    setLoadedImages(prev => {
+      const newCount = prev + 1;
+      if (newCount >= totalImages) {
+        // Small delay to ensure smooth transition
+        setTimeout(() => setIsLoading(false), 300);
+      }
+      return newCount;
+    });
+  };
+
+  useEffect(() => {
+    // Fallback in case some images don't fire load events
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000); // 5 second timeout max
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -386,6 +410,8 @@ database. Integrates AI lipsyncing technology and Google OAuth Login for immersi
                   src="/images/chat.png"
                   alt="A graphic of a girl"
                   className="w-full h-auto max-w-xs"
+                  onLoad={handleImageLoad}
+                  onError={() => handleImageLoad()} // In case image fails to load
                 />
               </div>
             </div>
