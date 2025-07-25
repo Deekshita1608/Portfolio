@@ -5,12 +5,12 @@ import { FaGithub } from 'react-icons/fa';
 export function Card({ imageSrc, title, description, tags, githubLink, className = '' }) {
   return (
     <div
-      className={`bg-white rounded-2xl shadow-md overflow-hidden flex flex-col transition-transform duration-300 hover:scale-105 ${className}`}
+      className={`bg-[var(--card-bg)] rounded-2xl shadow-md overflow-hidden flex flex-col transition-transform duration-300 hover:scale-105 ${className}`}
     >
       <img src={imageSrc} alt={title} className="w-full h-48 object-cover" />
       <div className="p-4 flex flex-col flex-grow gap-2">
         <h3 className="text-lg font-semibold text-pink-600">{title}</h3>
-        <p className="text-gray-600 text-sm flex-grow">{description}</p>
+        <p className="text-[var(--text-secondary)] text-sm flex-grow">{description}</p>
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
             {tags.map((tag, index) => (

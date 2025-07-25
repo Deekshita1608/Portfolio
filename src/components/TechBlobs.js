@@ -24,13 +24,14 @@ const Blob = React.memo(({ blob }) => (
       transform: `translate(${blob.x}px, ${blob.y}px)`,
       backgroundColor: 'rgba(255, 255, 255, 0.1)',
       backdropFilter: 'blur(5px)',
+      willChange: 'transform',
     }}
   >
     <img
+      loading="lazy"
       src={blob.logo.src}
       alt={blob.logo.name}
-      className="object-contain"
-      style={{ width: '60px', height: '60px' }}
+      className="object-contain w-[40px] h-[40px] md:w-[60px] md:h-[60px]"
     />
   </div>
 ));
@@ -38,7 +39,6 @@ const Blob = React.memo(({ blob }) => (
 export const TechBlobs = () => {
   const containerRef = useRef(null);
   const [blobs, setBlobs] = useState([]);
-  const [isAnimationActive, setIsAnimationActive] = useState(true);
   const animationFrameId = useRef(null);
 
   const initializeBlobs = () => {
@@ -46,16 +46,49 @@ export const TechBlobs = () => {
     if (!container) return;
 
     const { width, height } = container.getBoundingClientRect();
+    const isMobile = window.innerWidth < 768;
+    const maxAttempts = 100;
+    const minBuffer = 20;
 
-    setBlobs(techLogos.map((logo, index) => ({
-      id: index,
-      logo,
-      size: Math.random() * 40 + 80,
-      x: Math.random() * (width - 120),
-      y: Math.random() * (height - 120),
-      vx: (Math.random() - 0.5) * 2,
-      vy: (Math.random() - 0.5) * 2,
-    })));
+    const newBlobs = [];
+
+    techLogos.forEach((logo, index) => {
+      const size = (Math.random() * 40 + 80) * (isMobile ? 0.8 : 1);
+      let x, y, attempts = 0;
+      let overlapping = false;
+
+      do {
+        overlapping = false;
+        x = Math.random() * (width - size);
+        y = Math.random() * (height - size);
+
+        for (const other of newBlobs) {
+          const dx = x - other.x;
+          const dy = y - other.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const minDistance = (size + other.size) / 2;
+
+          if (distance < minDistance + minBuffer) {
+            overlapping = true;
+            break;
+          }
+        }
+
+        attempts++;
+      } while (overlapping && attempts < maxAttempts);
+
+      newBlobs.push({
+        id: index,
+        logo,
+        size,
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 2,
+        vy: (Math.random() - 0.5) * 2,
+      });
+    });
+
+    setBlobs(newBlobs);
   };
 
   useEffect(() => {
@@ -63,14 +96,11 @@ export const TechBlobs = () => {
       let timeoutId;
       return (...args) => {
         clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-          func.apply(this, args);
-        }, delay);
+        timeoutId = setTimeout(() => func.apply(this, args), delay);
       };
     };
 
     const debouncedInitialize = debounce(initializeBlobs, 250);
-
     initializeBlobs();
 
     window.addEventListener('resize', debouncedInitialize);
@@ -78,21 +108,8 @@ export const TechBlobs = () => {
   }, []);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsAnimationActive(window.innerWidth > 768);
-    };
-
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
-
-  useEffect(() => {
-    if (blobs.length === 0 || !isAnimationActive) {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-      }
+    if (blobs.length === 0) {
+      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
       return;
     }
 
@@ -100,16 +117,15 @@ export const TechBlobs = () => {
       const container = containerRef.current;
       if (!container) return;
       const { width, height } = container.getBoundingClientRect();
-      const glowBuffer = 15; // Px buffer for the shadow 'glow'
+      const glowBuffer = 15;
 
       setBlobs(prevBlobs => {
-        const newBlobs = JSON.parse(JSON.stringify(prevBlobs));
+        const newBlobs = prevBlobs.map(blob => ({ ...blob }));
 
         newBlobs.forEach(blob => {
           blob.x += blob.vx;
           blob.y += blob.vy;
 
-          // Wall collision
           if (blob.x - glowBuffer <= 0 || blob.x + blob.size + glowBuffer >= width) {
             blob.vx *= -1;
             blob.x = Math.max(glowBuffer, Math.min(blob.x, width - blob.size - glowBuffer));
@@ -120,31 +136,32 @@ export const TechBlobs = () => {
           }
         });
 
+        // Collision handling
         for (let i = 0; i < newBlobs.length; i++) {
           for (let j = i + 1; j < newBlobs.length; j++) {
-            const blob = newBlobs[i];
-            const other = newBlobs[j];
+            const blobA = newBlobs[i];
+            const blobB = newBlobs[j];
 
-            const dx = other.x - blob.x;
-            const dy = other.y - blob.y;
+            const dx = blobB.x - blobA.x;
+            const dy = blobB.y - blobA.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            const minDistance = (blob.size + other.size) / 2;
+            const minDistance = (blobA.size + blobB.size) / 2;
 
             if (distance < minDistance) {
               const angle = Math.atan2(dy, dx);
               const overlap = minDistance - distance;
 
-              blob.x -= (overlap / 2) * Math.cos(angle);
-              blob.y -= (overlap / 2) * Math.sin(angle);
-              other.x += (overlap / 2) * Math.cos(angle);
-              other.y += (overlap / 2) * Math.sin(angle);
+              blobA.x -= (overlap / 2) * Math.cos(angle);
+              blobA.y -= (overlap / 2) * Math.sin(angle);
+              blobB.x += (overlap / 2) * Math.cos(angle);
+              blobB.y += (overlap / 2) * Math.sin(angle);
 
-              const tempVx = blob.vx;
-              const tempVy = blob.vy;
-              blob.vx = other.vx;
-              blob.vy = other.vy;
-              other.vx = tempVx;
-              other.vy = tempVy;
+              const tempVx = blobA.vx;
+              const tempVy = blobA.vy;
+              blobA.vx = blobB.vx;
+              blobA.vy = blobB.vy;
+              blobB.vx = tempVx;
+              blobB.vy = tempVy;
             }
           }
         }

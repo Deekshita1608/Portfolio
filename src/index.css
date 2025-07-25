@@ -1,3 +1,61 @@
+:root {
+  --bg-gradient-start: #fdf2f8;
+  --bg-gradient-via: #f5f3ff;
+  --bg-gradient-end: #eff6ff;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --card-bg: rgba(255, 255, 255, 0.5);
+  --navbar-bg: #9D6381;
+  --navbar-text: #ffffff;
+  --timeline-line: #e9c8ff;
+  --timeline-dot-border: #9D6381;
+  --timeline-dot-bg: white;
+  --timeline-content-bg: white;
+  --timeline-content-h3: #7e22ce;
+  --timeline-content-p: #4b5563;
+  --timeline-note-p: #161b24;
+  --timeline-date: #a78bfa;
+  --input-bg: white;
+  --input-border: #d1d5db;
+  --input-focus-ring: #f472b6;
+  --cursor-dot: #9D6381;
+  --cursor-glow: rgba(228, 138, 230, 0.7);
+  --cursor-glow-hover: rgba(228, 138, 230, 0.7);
+  --tech-blob-bg: rgba(255, 255, 255, 0.7);
+  --about-bg-card-start: #fbcfe8;
+  --about-bg-card-via: #e9d5ff;
+  --about-bg-card-end: #bfdbfe;
+}
+
+.dark {
+  --bg-gradient-start: #0d0f1a;
+  --bg-gradient-via: #1a1f2e;
+  --bg-gradient-end: #2a2e3e;
+  --text-primary: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --card-bg:  #2b3542;
+  --navbar-bg: #1f2937;
+  --navbar-text: #f3f4f6;
+  --timeline-line: #4b5563;
+  --timeline-dot-border: #9ca3af;
+  --timeline-dot-bg: #374151;
+  --timeline-content-bg: #1f2937;
+  --timeline-content-h3: #a78bfa;
+  --timeline-content-p: #d1d5db;
+  --timeline-note-p: #161b24;
+  --timeline-date: #93c5fd;
+  --input-bg: #374151;
+  --input-border: #6b7280;
+  --input-focus-ring: #a78bfa;
+  --cursor-dot: #a78bfa;
+  --cursor-glow: rgba(232, 228, 245, 0.2);
+  --cursor-glow-hover: rgba(167, 139, 250, 0.3);
+  --tech-blob-bg: rgba(55, 65, 81, 0.7);
+  --about-bg-card-start: #0d9488;  /* teal-600 */
+--about-bg-card-via: #9333ea;    /* purple-600 (blend tone) */
+--about-bg-card-end: #c026d3; 
+}
+
 /* V2 */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap');
 @import url("https://fonts.googleapis.com/css2?family=Delius+Swash+Caps&family=Great+Vibes&family=Patrick+Hand&display=swap");
@@ -24,7 +82,7 @@
   content: '';
   position: absolute;
   width: 6px;
-  background-color: #e9c8ff;
+  background-color: var(--timeline-line);
   top: 0;
   bottom: 0;
   left: 50%;
@@ -45,8 +103,8 @@
   position: absolute;
   width: 25px;
   height: 25px;
-  background-color: white;
-  border: 4px solid #9D6381; /* Changed color */
+  background-color: var(--timeline-dot-bg);
+  border: 4px solid var(--timeline-dot-border); /* Changed color */
   top: 15px;
   border-radius: 50%;
   z-index: 1;
@@ -73,7 +131,7 @@
 
 .timeline-content {
   padding: 20px 20px;
-  background-color: white;
+  background-color: var(--timeline-content-bg);
   position: relative;
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -86,20 +144,20 @@
 }
 
 .timeline-content h3 {
-  color: #7e22ce;
+  color: var(--timeline-content-h3);
   margin-bottom: 8px;
   font-size: 1.25rem;
 }
 
 .timeline-content p {
   margin: 6px 0;
-  color: #4b5563;
+  color: var(--timeline-content-p);
   font-size: 0.95rem;
   line-height: 1.5;
 }
 
 .timeline-date {
-  color: #a78bfa;
+  color: var(--timeline-date);
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 6px;
@@ -131,6 +189,18 @@
   }
 }
 
+.about-me-bg-card {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: linear-gradient(to bottom right, var(--about-bg-card-start), var(--about-bg-card-via), var(--about-bg-card-end));
+  border-radius: 1rem; /* 16px */
+  transform: rotate(-3deg);
+  transition: background-image 0.3s ease-in-out;
+}
+
 /* Timeline Note Styles */
 .timeline-note {
   position: absolute;
@@ -138,7 +208,7 @@
   width: 150px;
   height: 150px; /* Set a fixed height */
   padding: 30px;
-  background-image: url('C:\Users\deeks\Desktop\portfolio\public\images\snote.png'); /* Corrected path */
+  background-image: url('../public/images/snote.png');
   background-repeat: no-repeat;
   background-position: center;
   background-color: transparent;
@@ -159,7 +229,9 @@
   opacity: 1;
   transition: all 0.4s ease;
 }
-
+.timeline-note p {
+  color: var(--timeline-note-p);
+}
 .left .timeline-note {
   left: 115%;
   transform: rotate(5deg);
@@ -192,7 +264,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: var(--tech-blob-bg);
   backdrop-filter: blur(10px);
   border-radius: 50%;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -208,7 +280,7 @@ body, html, a, button {
   position: fixed;
   width: 15px;
   height: 15px;
-  background-color: #9D6381;
+  background-color: var(--cursor-dot);
   border-radius: 50%;
   pointer-events: none;
   transform: translate(-50%, -50%);
@@ -220,7 +292,7 @@ body, html, a, button {
   position: fixed;
   width: 50px;
   height: 50px;
-  background-color: rgba(228, 138, 230, 0.1);
+  background-color: var(--cursor-glow);
   border-radius: 50%;
   pointer-events: none;
   transform: translate(-50%, -50%);
@@ -236,5 +308,5 @@ body, html, a, button {
 .cursor-glow.hovered {
   width: 70px;
   height: 70px;
-  background-color: rgba(228, 138, 230, 0.2);
+  background-color: var(--cursor-glow-hover);
 }

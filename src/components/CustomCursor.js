@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { motion, useSpring } from 'framer-motion';
 
 export function CustomCursor() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [dotPosition, setDotPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+
+  const springConfig = { damping: 15, stiffness: 100, mass: 0.2 };
+  const circleX = useSpring(0, springConfig);
+  const circleY = useSpring(0, springConfig);
 
   useEffect(() => {
     const onMouseMove = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
+      circleX.set(e.clientX);
+      circleY.set(e.clientY);
     };
 
     const onMouseEnter = () => setIsHovering(true);
@@ -30,27 +36,24 @@ export function CustomCursor() {
     };
   }, []);
 
-  useEffect(() => {
-    const dotAnimation = requestAnimationFrame(() => {
-      setDotPosition(prevDotPosition => {
-        const dx = position.x - prevDotPosition.x;
-        const dy = position.y - prevDotPosition.y;
-        return {
-          x: prevDotPosition.x + dx * 0.9,
-          y: prevDotPosition.y + dy * 0.9,
-        };
-      });
-    });
-
-    return () => {
-      cancelAnimationFrame(dotAnimation);
-    };
-  }, [position]);
+  
 
   return (
     <>
-      <div className={`cursor-glow ${isHovering ? 'hovered' : ''}`} style={{ left: `${position.x}px`, top: `${position.y}px` }} />
-      <div className={`cursor-dot ${isHovering ? 'hovered' : ''}`} style={{ left: `${dotPosition.x}px`, top: `${dotPosition.y}px` }} />
+      <motion.div
+        className={`cursor-glow ${isHovering ? 'hovered' : ''}`}
+        style={{
+          left: circleX,
+          top: circleY,
+        }}
+      />
+      <div
+        className={`cursor-dot ${isHovering ? 'hovered' : ''}`}
+        style={{
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+        }}
+      />
     </>
   );
 }
