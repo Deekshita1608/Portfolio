@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Loading from './components/Loading';
 import emailjs from '@emailjs/browser';
 import { Card } from './components/card';
 import { ExperienceCard } from './components/ExperienceCard';
@@ -8,34 +7,24 @@ import { motion } from 'framer-motion';
 import { FaDownload, FaEnvelope, FaGithub, FaLinkedin, FaBars, FaTimes, FaSun, FaMoon, FaHeart } from 'react-icons/fa';
 import { TechBlobs } from './components/TechBlobs';
 import { CustomCursor } from './components/CustomCursor';
+import Loader from './components/Loader';
 import './index.css';
 const sections = ['Home', 'About', 'Experience', 'Projects', 'Education', 'Contact'];
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadedImages, setLoadedImages] = useState(0);
-  const totalImages = 1; // Update this with the actual number of images in your app
   const [theme, setTheme] = useState('light');
   const form = useRef();
-
-  const handleImageLoad = () => {
-    setLoadedImages(prev => {
-      const newCount = prev + 1;
-      if (newCount >= totalImages) {
-        // Small delay to ensure smooth transition
-        setTimeout(() => setIsLoading(false), 300);
-      }
-      return newCount;
-    });
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fallback in case some images don't fire load events
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 5000); // 5 second timeout max
+    const handleLoad = () => setLoading(false);
 
-    return () => clearTimeout(timer);
+    if (document.readyState === 'complete') {
+      handleLoad(); // instantly load if already ready
+    } else {
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
   }, []);
 
   const sendEmail = (e) => {
@@ -74,7 +63,7 @@ export default function App() {
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -102,6 +91,10 @@ export default function App() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="font-sans bg-gradient-to-br from-[var(--bg-gradient-start)] via-[var(--bg-gradient-via)] to-[var(--bg-gradient-end)] min-h-screen text-[var(--text-primary)] transition-colors duration-300">
@@ -410,8 +403,6 @@ database. Integrates AI lipsyncing technology and Google OAuth Login for immersi
                   src="/images/chat.png"
                   alt="A graphic of a girl"
                   className="w-full h-auto max-w-xs"
-                  onLoad={handleImageLoad}
-                  onError={() => handleImageLoad()} // In case image fails to load
                 />
               </div>
             </div>
