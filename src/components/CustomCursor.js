@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useSpring } from 'framer-motion';
 
+// Check if device is mobile
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
 export function CustomCursor() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
@@ -36,22 +41,43 @@ export function CustomCursor() {
     };
   }, []);
 
-  
+  // Don't render cursor on mobile devices
+  if (isMobile()) {
+    return null;
+  }
 
   return (
     <>
       <motion.div
-        className={`cursor-glow ${isHovering ? 'hovered' : ''}`}
+        className="cursor-dot hidden md:block"
         style={{
-          left: circleX,
-          top: circleY,
+          position: 'fixed',
+          left: position.x,
+          top: position.y,
+          transform: 'translate(-50%, -50%)',
+          width: '8px',
+          height: '8px',
+          backgroundColor: 'var(--cursor-dot)',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+          zIndex: 9999,
         }}
       />
-      <div
-        className={`cursor-dot ${isHovering ? 'hovered' : ''}`}
+      <motion.div
+        className="cursor-outline hidden md:block"
         style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
+          position: 'fixed',
+          left: circleX,
+          top: circleY,
+          transform: 'translate(-50%, -50%)',
+          width: isHovering ? '60px' : '30px',
+          height: isHovering ? '60px' : '30px',
+          backgroundColor: 'transparent',
+          border: `2px solid var(--cursor-outline)`,
+          borderRadius: '50%',
+          pointerEvents: 'none',
+          zIndex: 9998,
+          transition: 'width 0.3s ease, height 0.3s ease, border-color 0.3s ease',
         }}
       />
     </>
