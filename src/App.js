@@ -176,18 +176,20 @@ export default function App() {
         {/* Home Section */}
         <section id="home" className="px-4 sm:px-6 md:px-12 lg:px-24 w-full">
           <motion.div
-            className="flex flex-col md:flex-row items-center justify-center gap-12"
+            className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 px-2 sm:px-4"
             initial={{ opacity: 0, x: -100 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
           >
             {/* Image */}
-            <img
-              src="/images/me.png"
-              alt="Deekshita Illustration"
-              className="w-[450px] h-[450px] object-cover rounded-2xl"
-            />
+            <div className="w-full max-w-[350px] md:max-w-[450px] mx-auto md:mx-0">
+              <img
+                src="/images/me.png"
+                alt="Deekshita Illustration"
+                className="w-full h-auto max-h-[350px] md:max-h-[450px] object-cover rounded-2xl"
+              />
+            </div>
 
             {/* Text Content */}
             <div className="text-center md:text-left">
