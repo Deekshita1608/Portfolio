@@ -17,10 +17,22 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handleLoad = () => setLoading(false);
+    const loadStartTime = Date.now();
+    const MIN_LOAD_TIME = 2000; // 2 seconds minimum load time
+    
+    const handleLoad = () => {
+      const loadTime = Date.now() - loadStartTime;
+      const timeRemaining = Math.max(0, MIN_LOAD_TIME - loadTime);
+      
+      // Wait for the remaining time if needed before hiding the loader
+      setTimeout(() => {
+        setLoading(false);
+      }, timeRemaining);
+    };
 
     if (document.readyState === 'complete') {
-      handleLoad(); // instantly load if already ready
+      // If page is already loaded, still wait for minimum load time
+      handleLoad();
     } else {
       window.addEventListener('load', handleLoad);
       return () => window.removeEventListener('load', handleLoad);
@@ -97,7 +109,7 @@ export default function App() {
   }
 
   return (
-    <div className="font-sans bg-gradient-to-br from-[var(--bg-gradient-start)] via-[var(--bg-gradient-via)] to-[var(--bg-gradient-end)] min-h-screen text-[var(--text-primary)] transition-colors duration-300">
+    <div className="font-sans bg-gradient-to-br from-[var(--bg-gradient-start)] via-[var(--bg-gradient-via)] to-[var(--bg-gradient-end)] min-h-screen text-[var(--text-primary)] transition-colors duration-300 overflow-x-hidden">
       <CustomCursor />
       {/* Navbar */}
       <nav className="fixed top-5 left-1/2 -translate-x-1/2 w-11/12 max-w-7xl bg-[var(--navbar-bg)] backdrop-blur-md z-50 shadow-xl rounded-3xl transition-colors duration-300">
@@ -160,9 +172,9 @@ export default function App() {
         )}
       </nav>
 
-      <main className="pt-32 space-y-32">
+      <main className="pt-32 space-y-32 w-full overflow-hidden">
         {/* Home Section */}
-        <section id="home" className="px-6 md:px-12 lg:px-24">
+        <section id="home" className="px-4 sm:px-6 md:px-12 lg:px-24 w-full">
           <motion.div
             className="flex flex-col md:flex-row items-center justify-center gap-12"
             initial={{ opacity: 0, x: -100 }}
@@ -219,7 +231,7 @@ export default function App() {
         </section>
 
         {/* About Section */}
-        <section id="about" className="px-6 md:px-12 lg:px-24">
+        <section id="about" className="px-4 sm:px-6 md:px-12 lg:px-24 w-full overflow-hidden">
           <motion.div
             className="flex flex-col md:flex-row items-center justify-center gap-16"
             initial={{ opacity: 0, y: 100 }}
@@ -254,7 +266,7 @@ export default function App() {
         </section>
 
         {/* Experience Section */}
-        <section id="experience" className="px-6 md:px-12 lg:px-24">
+        <section id="experience" className="px-4 sm:px-6 md:px-12 lg:px-24 w-full overflow-hidden">
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -274,7 +286,7 @@ export default function App() {
         </section>
 
         {/* Projects Section */}
-        <section id="projects" className="px-6 text-center">
+        <section id="projects" className="px-4 sm:px-6 text-center w-full overflow-hidden">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -310,7 +322,7 @@ database. Integrates AI lipsyncing technology and Google OAuth Login for immersi
         </section>
 
         {/* Education Section */}
-        <section id="education" className="px-6">
+        <section id="education" className="px-4 sm:px-6 w-full overflow-hidden">
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -363,7 +375,7 @@ database. Integrates AI lipsyncing technology and Google OAuth Login for immersi
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="px-6 md:px-12 lg:px-24 py-16">
+        <section id="contact" className="px-4 sm:px-6 md:px-12 lg:px-24 py-16 w-full overflow-hidden">
           <motion.div
             initial={{ opacity: 0, x: 100 }}
             whileInView={{ opacity: 1, x: 0 }}
